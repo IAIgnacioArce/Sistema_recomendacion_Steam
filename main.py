@@ -30,7 +30,7 @@ def mensaje():
 @app.get('/developer/')
 def get_developer_stats(desarrollador: str):
 
-    df = pd.read_parquet("/Users/Usuario/Desktop/proyecto steam/Data Exportada/user_games_clean.parquet")
+    df = pd.read_parquet("Data Exportada/user_games_clean.parquet")
 
 
     df['release_date'] = pd.to_datetime(df['release_date'], errors='coerce')
