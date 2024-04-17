@@ -147,39 +147,39 @@ def user_for_genre(genero: str):
 #----------------------------------------------------------------------------------------------------------------------------
 #Esta consulta devuelve un diccionario con el nombre del desarrollador como llave y una lista con la cantidad total de registros de rese;as de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo, en caso de no estar categorizados o encontrarse arroja el mensaje "No se encontró información sobre el desarrollador '...'".
 #http://127.0.0.1:8000/developer-reviews-analysis/?desarrollador=Kotoshiro
-@app.get("/developer-reviews-analysis/")
+#@app.get("/developer-reviews-analysis/")
 
 
-def developer_reviews_analysis(desarrollador: str):
+#def developer_reviews_analysis(desarrollador: str):
 
-    games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
-    sentiment = pd.read_parquet('./Data Exportada/Sentiment_Analysis_parquet')
-    games_copy = games.copy()
-    sentiment_copy = sentiment.copy()
+#    games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+#    sentiment = pd.read_parquet('./Data Exportada/Sentiment_Analysis_parquet')
+#    games_copy = games.copy()
+#    sentiment_copy = sentiment.copy()
 
 #Combinar conjuntos de datos en las columnas apropiadas ('item_id' en reviews y 'id' en games)
-    merged_data = pd.merge(sentiment_copy, games_copy, left_on='item_id', right_on='id')
+#    merged_data = pd.merge(sentiment_copy, games_copy, left_on='item_id', right_on='id')
 
 #Filtrar filas donde el puntaje de sentimiento es positivo (2) o negativo (0)
-    filtered_data = merged_data[merged_data['sentiment_analysis'] != 1]  # Excluir sentimiento neutral
+#    filtered_data = merged_data[merged_data['sentiment_analysis'] != 1]  # Excluir sentimiento neutral
 
 #Agrupar por desarrolladora y puntaje de sentimiento, contar la cantidad de resenas
-    grouped_data = filtered_data.groupby(['developer', 'sentiment_analysis']).size().unstack(fill_value=0)
+#    grouped_data = filtered_data.groupby(['developer', 'sentiment_analysis']).size().unstack(fill_value=0)
 
 #Verificar si la desarrolladora está presente en el DataFrame
-    if desarrollador in grouped_data.index:
+ #   if desarrollador in grouped_data.index:
         # Extraer cantidad de resenas positivas y negativas para la desarrolladora especificada
-        developer_reviews = grouped_data.loc[desarrollador]
+ #       developer_reviews = grouped_data.loc[desarrollador]
 
         # Convertir cantidades a formato de lista con claves especificadas
-        developer_reviews_list = [
-            {"Negativas": developer_reviews.get(0, 0)},
-            {"Positivas": developer_reviews.get(2, 0)}
-        ]
+ #       developer_reviews_list = [
+  #          {"Negativas": developer_reviews.get(0, 0)},
+   #         {"Positivas": developer_reviews.get(2, 0)}
+    #    ]
 
-        return {desarrollador: developer_reviews_list}
-    else:
-        return f"No se encontró información sobre la desarrolladora {desarrollador}"
+     #   return {desarrollador: developer_reviews_list}
+    #else:
+    #    return f"No se encontró información sobre la desarrolladora {desarrollador}"
 
 
 
@@ -187,11 +187,11 @@ def developer_reviews_analysis(desarrollador: str):
 # ------------------------------------------------------------------------------------
 #                                       CONSULTA 4 
 #-------------------------------------------------------------------------------------
-df_merged = pd.read_parquet('./Data Exportada/df_marged.parquet')
+#df_merged = pd.read_parquet('./Data Exportada/df_marged.parquet')
 
-@app.get('/best_developer_year/')
+#@app.get('/best_developer_year/')
 
-def best_developer_year(año:int):
+#def best_developer_year(año:int):
     """
     Devuelve el top 3 de desarrolladores con juegos MÁS recomendados por usuarios para el año dado.
     Se tienen en cuenta recommend = True + sentiment_analysis con mayor puntuación.
@@ -204,80 +204,80 @@ def best_developer_year(año:int):
         dict: Diccionario ordenado con los top 3 desarrolladores para el año dado, en formato {1er puesto: primer juego, 2do puesto: segundo juego, 3er puesto: tercer juego}.
     """
     # Filtrar el DataFrame para el año dado
-    df_año = df_merged[df_merged['year_posted'] == año]
+   # df_año = df_merged[df_merged['year_posted'] == año]
 
     # Filtrar por recomendaciones verdaderas y sentimiento de análisis más alto
-    df_filtrado = df_año[df_año['recommend'] & (df_año['sentiment_analysis'] == df_año['sentiment_analysis'].max())]
+   # df_filtrado = df_año[df_año['recommend'] & (df_año['sentiment_analysis'] == df_año['sentiment_analysis'].max())]
 
     # Agrupar por desarrollador y contar las recomendaciones
-    top_developers = df_filtrado.groupby('developer')['recommend'].sum()
+   # top_developers = df_filtrado.groupby('developer')['recommend'].sum()
 
     # Ordenar los desarrolladores por número de recomendaciones en orden descendente
-    top_developers = top_developers.sort_values(ascending=False)
+   # top_developers = top_developers.sort_values(ascending=False)
 
     # Tomar los top 3 desarrolladores
-    top_3_developers = top_developers.head(3)
+  #  top_3_developers = top_developers.head(3)
 
     # Crear el diccionario ordenado con los top 3 desarrolladores
-    top_developers_dict = {}
-    for i, (developer, recomendaciones) in enumerate(top_3_developers.items(), 1):
-        puesto = f"{i}er puesto"
-        top_developers_dict[puesto] = developer
-
-    return top_developers_dict
+    #top_developers_dict = {}
+   # for i, (developer, recomendaciones) in enumerate(top_3_developers.items(), 1):
+  #      puesto = f"{i}er puesto"
+ #       top_developers_dict[puesto] = developer
+#
+#    return top_developers_dict
 
 #--------------------------------------------------------------------------------------------------------------
 #                                           MODELO SISTEMA DE RECOMENDACION
 #--------------------------------------------------------------------------------------------------------------
 #774276 ---> usuario de prueba 
 
-df_genres = pd.read_parquet('./Data Exportada/df_dummies.parquet')
-df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+#df_genres = pd.read_parquet('./Data Exportada/df_dummies.parquet')
+#df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
 
-df_merged = df_games.merge(df_genres, on='id', how='left')
-features = ['release_date'] + list(df_genres.columns[1:])
-scaler = StandardScaler()
-df_merged['release_date'] = scaler.fit_transform(df_merged[['release_date']])
-df_final = df_merged[['id'] + features]
-df_final= df_final.merge(df_games[['id', 'app_name']], on='id', how='left')
+#df_merged = df_games.merge(df_genres, on='id', how='left')
+#features = ['release_date'] + list(df_genres.columns[1:])
+#scaler = StandardScaler()
+#df_merged['release_date'] = scaler.fit_transform(df_merged[['release_date']])
+#df_final = df_merged[['id'] + features]
+#df_final= df_final.merge(df_games[['id', 'app_name']], on='id', how='left')
 
-df_sampled = df_final.sample(frac=0.2, random_state=42)
-similarity_matrix = cosine_similarity(df_sampled[features].fillna(0))
-similarity_matrix = np.nan_to_num(similarity_matrix)
+#df_sampled = df_final.sample(frac=0.2, random_state=42)
+#similarity_matrix = cosine_similarity(df_sampled[features].fillna(0))
+#similarity_matrix = np.nan_to_num(similarity_matrix)
 
 #Definir la variable global top_n
-top_n = 5
+#top_n = 5
 
-@app.get("/recomendacion-juegos/")
-def recomendar_juegos(game_id: str):
-    ids_juegos_muestreados = df_sampled['id'].unique()
+#@app.get("/recomendacion-juegos/")
+#def recomendar_juegos(game_id: str):
+    #ids_juegos_muestreados = df_sampled['id'].unique()
 
 #Verificar si el ID del juego está en los juegos muestreados
-    if game_id not in ids_juegos_muestreados:
-        return f"No se encontraron recomendaciones: {game_id} no está en los datos muestreados."
+    #if game_id not in ids_juegos_muestreados:
+    #    return f"No se encontraron recomendaciones: {game_id} no está en los datos muestreados."
 
 #Obtener el índice del juego en los datos muestreados
-    indice_juego = df_sampled.index[df_sampled['id'] == game_id].tolist()
+    #indice_juego = df_sampled.index[df_sampled['id'] == game_id].tolist()
 #Verificar si se encontró el juego en los datos muestreados
-    if not indice_juego:
-        return f"No se encontraron recomendaciones: {game_id} no está en los datos muestreados."
+   # if not indice_juego:
+   #     return f"No se encontraron recomendaciones: {game_id} no está en los datos muestreados."
 
-    indice_juego = indice_juego[0]
+  #  indice_juego = indice_juego[0]
 
     # Calcular los puntajes de similitud entre juegos
-    puntajes_similitud = list(enumerate(similarity_matrix[indice_juego]))
-    puntajes_similitud = sorted(puntajes_similitud, key=lambda x: x[1], reverse=True)
+ #   puntajes_similitud = list(enumerate(similarity_matrix[indice_juego]))
+#    puntajes_similitud = sorted(puntajes_similitud, key=lambda x: x[1], reverse=True)
 
     # Obtener los índices de los juegos similares
-    indices_juegos_similares = [i for i, puntaje in puntajes_similitud[1:top_n+1]]
+#    indices_juegos_similares = [i for i, puntaje in puntajes_similitud[1:top_n+1]]
 
 #Obtener los nombres de los juegos similares
     nombres_juegos_similares = df_sampled['app_name'].iloc[indices_juegos_similares].tolist()
 
     # Mensaje de recomendación
-    mensaje_recomendacion = f"Juegos recomendados basados en el ID del juego {game_id} - {df_sampled['app_name'].iloc[indice_juego]}:"
+#    mensaje_recomendacion = f"Juegos recomendados basados en el ID del juego {game_id} - {df_sampled['app_name'].iloc[indice_juego]}:"
 
-    return [mensaje_recomendacion] + nombres_juegos_similares 
+#    return [mensaje_recomendacion] + nombres_juegos_similares 
 
 
 
