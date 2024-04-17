@@ -61,52 +61,52 @@ def get_developer_stats(desarrollador: str):
 #Ejemplo de retorno: {"Usuario X" : us213ndjss09sdf, "Dinero gastado": 200 USD, "% de recomendación": 20%, "cantidad de items": 5}
 #http://127.0.0.1:8000/userdata/?User_id=76561198070234207
 
-@app.get("/userdata/")
-def get_user_data(User_id: str):
-    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
-    df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
-    df_reviews = pd.read_parquet('./Data Exportada/user_reviews_clean.parquet')
+#@app.get("/userdata/")
+#def get_user_data(User_id: str):
+   # df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+    #df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
+#    df_reviews = pd.read_parquet('./Data Exportada/user_reviews_clean.parquet')
+#
+ #   games_copy = df_games.copy()
+#    items_copy = df_items.copy()
+#    reviews_copy = df_reviews.copy()
 
-    games_copy = df_games.copy()
-    items_copy = df_items.copy()
-    reviews_copy = df_reviews.copy()
-
-    # Convertir la columna 'user_id' a str
-    items_copy['user_id'] = items_copy['user_id'].astype(str)
-    reviews_copy['user_id'] = reviews_copy['user_id'].astype(str)
-
-    # Filtrar df_Items por el user_id dado
-    user_items = items_copy[items_copy['user_id'] == str(User_id)]
-
-    # Calcular la cantidad de dinero gastado por el usuario
-    # Convertir la columna 'price' a numérica
-    games_copy['price'] = pd.to_numeric(games_copy['price'], errors='coerce')
-    money_spent = user_items.merge(games_copy[['id', 'price']], left_on='item_id', right_on='id')['price'].sum()
+#    # Convertir la columna 'user_id' a str
+ #   items_copy['user_id'] = items_copy['user_id'].astype(str)
+  #  reviews_copy['user_id'] = reviews_copy['user_id'].astype(str)
+#
+ #   # Filtrar df_Items por el user_id dado
+  #  user_items = items_copy[items_copy['user_id'] == str(User_id)]
+#
+ #   # Calcular la cantidad de dinero gastado por el usuario
+  #  # Convertir la columna 'price' a numérica
+   # games_copy['price'] = pd.to_numeric(games_copy['price'], errors='coerce')
+   # money_spent = user_items.merge(games_copy[['id', 'price']], left_on='item_id', right_on='id')['price'].sum()
 
     # Calcular la cantidad total de items del usuario
-    total_items = user_items['items_count'].sum()
+    #total_items = user_items['items_count'].sum()
 
     # Filtrar df_reviews por el user_id dado
-    user_reviews = reviews_copy[reviews_copy['user_id'] == str(User_id)]
+    #user_reviews = reviews_copy[reviews_copy['user_id'] == str(User_id)]
 #Calcular el porcentaje de recomendación promedio del usuario
-    if user_reviews.shape[0] > 0:
-        recommendation_percentage = (user_reviews['recommend'].sum() / user_reviews.shape[0]) * 100
-    else:
-        recommendation_percentage = 0
+   # if user_reviews.shape[0] > 0:
+   #     recommendation_percentage = (user_reviews['recommend'].sum() / user_reviews.shape[0]) * 100
+    #else:
+   #     recommendation_percentage = 0
 
     # Convertir valores de numpy.int64 a tipos de datos estándar
-    money_spent = float(money_spent) if not pd.isnull(money_spent) else 0.0  # Convertir a float, manejar NaN si es necesario
-    recommendation_percentage = float(recommendation_percentage) if not pd.isnull(recommendation_percentage) else 0.0  # Convertir a float, manejar NaN si es necesario
+    #money_spent = float(money_spent) if not pd.isnull(money_spent) else 0.0  # Convertir a float, manejar NaN si es necesario
+   # recommendation_percentage = float(recommendation_percentage) if not pd.isnull(recommendation_percentage) else 0.0  # Convertir a float, manejar NaN si es necesario
 
 #Crear el diccionario de resultados
-    result = {
-        "Usuario": str(User_id),
-        "Dinero gastado": f"{money_spent:.2f} USD",  # Ajustamos el formato para mostrar dos decimales
-        "% de recomendación": f"{recommendation_percentage:.2f}%",
-        "Cantidad de items": int(total_items)
-    }
+   # result = {
+    #    "Usuario": str(User_id),
+    #    "Dinero gastado": f"{money_spent:.2f} USD",  # Ajustamos el formato para mostrar dos decimales
+    #    "% de recomendación": f"{recommendation_percentage:.2f}%",
+     #   "Cantidad de items": int(total_items)
+   # }
 
-    return JSONResponse(content=result)
+   # return JSONResponse(content=result)
 
 #------------------------------------------------------------------------------------------------------------------------
 #                                                      Consulta 03:
@@ -116,32 +116,32 @@ def get_user_data(User_id: str):
 
 #@app.get("/user-for-genre/")
 #def user_for_genre(genero: str):
-    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
-    df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
+#    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+ #   df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
 
-    df_games_copy = df_games.copy()
-    df_items_copy = df_items.copy()
+ #   df_games_copy = df_games.copy()
+ #   df_items_copy = df_items.copy()
 
     # Tu código existente de la función UserForGenre
-    if 'genres' not in df_games_copy.columns:
-        raise ValueError("El DataFrame df_games_copy no tiene una columna llamada 'genre'.")
+ #   if 'genres' not in df_games_copy.columns:
+ #       raise ValueError("El DataFrame df_games_copy no tiene una columna llamada 'genre'.")
 
-    df_games_copy['release_date'] = pd.to_datetime(df_games_copy['release_date'], errors='coerce')
+  #  df_games_copy['release_date'] = pd.to_datetime(df_games_copy['release_date'], errors='coerce')
 
-    juegos_genero = df_games_copy[df_games_copy['genres'] == genero]
-    juegos_usuario = juegos_genero.merge(df_items_copy, left_on='id', right_on='item_id')
-    horas_por_usuario = juegos_usuario.groupby('user_id')['playtime_forever'].sum().reset_index()
-    usuario_max_horas = horas_por_usuario.loc[horas_por_usuario['playtime_forever'].idxmax()]['user_id']
-    horas_por_año = juegos_usuario.groupby(juegos_usuario['release_date'].dt.year)['playtime_forever'].sum().reset_index()
-    horas_por_año.rename(columns={'playtime_forever': 'Horas'}, inplace=True)
-    horas_por_año = horas_por_año.to_dict('records')
+   # juegos_genero = df_games_copy[df_games_copy['genres'] == genero]
+   # juegos_usuario = juegos_genero.merge(df_items_copy, left_on='id', right_on='item_id')
+   # horas_por_usuario = juegos_usuario.groupby('user_id')['playtime_forever'].sum().reset_index()
+   # usuario_max_horas = horas_por_usuario.loc[horas_por_usuario['playtime_forever'].idxmax()]['user_id']
+   # horas_por_año = juegos_usuario.groupby(juegos_usuario['release_date'].dt.year)['playtime_forever'].sum().reset_index()
+   # horas_por_año.rename(columns={'playtime_forever': 'Horas'}, inplace=True)
+   # horas_por_año = horas_por_año.to_dict('records')
 
-    result = {
-        "Usuario con más horas jugadas para {}: ".format(genero): usuario_max_horas,
-        "Horas jugadas": horas_por_año
-    }
+   # result = {
+   #     "Usuario con más horas jugadas para {}: ".format(genero): usuario_max_horas,
+   #     "Horas jugadas": horas_por_año
+   # }
 
-    return result 
+    #return result 
 #----------------------------------------------------------------------------------------------------------------------------
 #                                                    CONSULTA 05
 #----------------------------------------------------------------------------------------------------------------------------
