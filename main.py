@@ -61,52 +61,52 @@ def get_developer_stats(desarrollador: str):
 #Ejemplo de retorno: {"Usuario X" : us213ndjss09sdf, "Dinero gastado": 200 USD, "% de recomendación": 20%, "cantidad de items": 5}
 #http://127.0.0.1:8000/userdata/?User_id=76561198070234207
 
-#@app.get("/userdata/")
-#def get_user_data(User_id: str):
-   # df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
-    #df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
-#    df_reviews = pd.read_parquet('./Data Exportada/user_reviews_clean.parquet')
-#
- #   games_copy = df_games.copy()
-#    items_copy = df_items.copy()
-#    reviews_copy = df_reviews.copy()
+@app.get("/userdata/")
+def get_user_data(User_id: str):
+    df_games = pd.read_parquet('Data Exportada/user_games_clean.parquet')
+    df_items = pd.read_parquet('Data Exportada/user_items_clean.parquet')
+    df_reviews = pd.read_parquet('Data Exportada/user_reviews_clean.parquet')
 
-#    # Convertir la columna 'user_id' a str
- #   items_copy['user_id'] = items_copy['user_id'].astype(str)
-  #  reviews_copy['user_id'] = reviews_copy['user_id'].astype(str)
-#
- #   # Filtrar df_Items por el user_id dado
-  #  user_items = items_copy[items_copy['user_id'] == str(User_id)]
-#
- #   # Calcular la cantidad de dinero gastado por el usuario
-  #  # Convertir la columna 'price' a numérica
-   # games_copy['price'] = pd.to_numeric(games_copy['price'], errors='coerce')
-   # money_spent = user_items.merge(games_copy[['id', 'price']], left_on='item_id', right_on='id')['price'].sum()
+    games_copy = df_games.copy()
+    items_copy = df_items.copy()
+    reviews_copy = df_reviews.copy()
+
+    # Convertir la columna 'user_id' a str
+    items_copy['user_id'] = items_copy['user_id'].astype(str)
+    reviews_copy['user_id'] = reviews_copy['user_id'].astype(str)
+
+    # Filtrar df_Items por el user_id dado
+    user_items = items_copy[items_copy['user_id'] == str(User_id)]
+
+    # Calcular la cantidad de dinero gastado por el usuario
+    # Convertir la columna 'price' a numérica
+    games_copy['price'] = pd.to_numeric(games_copy['price'], errors='coerce')
+    money_spent = user_items.merge(games_copy[['id', 'price']], left_on='item_id', right_on='id')['price'].sum()
 
     # Calcular la cantidad total de items del usuario
-    #total_items = user_items['items_count'].sum()
+    total_items = user_items['items_count'].sum()
 
     # Filtrar df_reviews por el user_id dado
-    #user_reviews = reviews_copy[reviews_copy['user_id'] == str(User_id)]
+    user_reviews = reviews_copy[reviews_copy['user_id'] == str(User_id)]
 #Calcular el porcentaje de recomendación promedio del usuario
-   # if user_reviews.shape[0] > 0:
-   #     recommendation_percentage = (user_reviews['recommend'].sum() / user_reviews.shape[0]) * 100
-    #else:
-   #     recommendation_percentage = 0
+    if user_reviews.shape[0] > 0:
+        recommendation_percentage = (user_reviews['recommend'].sum() / user_reviews.shape[0]) * 100
+    else:
+        recommendation_percentage = 0
 
     # Convertir valores de numpy.int64 a tipos de datos estándar
-    #money_spent = float(money_spent) if not pd.isnull(money_spent) else 0.0  # Convertir a float, manejar NaN si es necesario
-   # recommendation_percentage = float(recommendation_percentage) if not pd.isnull(recommendation_percentage) else 0.0  # Convertir a float, manejar NaN si es necesario
+    money_spent = float(money_spent) if not pd.isnull(money_spent) else 0.0  # Convertir a float, manejar NaN si es necesario
+    recommendation_percentage = float(recommendation_percentage) if not pd.isnull(recommendation_percentage) else 0.0  # Convertir a float, manejar NaN si es necesario
 
 #Crear el diccionario de resultados
-   # result = {
-    #    "Usuario": str(User_id),
-    #    "Dinero gastado": f"{money_spent:.2f} USD",  # Ajustamos el formato para mostrar dos decimales
-    #    "% de recomendación": f"{recommendation_percentage:.2f}%",
-     #   "Cantidad de items": int(total_items)
-   # }
+    result = {
+        "Usuario": str(User_id),
+        "Dinero gastado": f"{money_spent:.2f} USD",  # Ajustamos el formato para mostrar dos decimales
+        "% de recomendación": f"{recommendation_percentage:.2f}%",
+        "Cantidad de items": int(total_items)
+    }
 
-   # return JSONResponse(content=result)
+    return JSONResponse(content=result)
 
 #------------------------------------------------------------------------------------------------------------------------
 #                                                      Consulta 03:
@@ -114,72 +114,72 @@ def get_developer_stats(desarrollador: str):
 #Esta consulta devuelve devolver el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año de lanzamiento.
 #http://127.0.0.1:8000/user-for-genre/?genero=Action
 
-#@app.get("/user-for-genre/")
-#def user_for_genre(genero: str):
-#    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
- #   df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
+@app.get("/user-for-genre/")
+def user_for_genre(genero: str):
+    df_games = pd.read_parquet('Data Exportada/user_games_clean.parquet')
+    df_items = pd.read_parquet('Data Exportada/user_items_clean.parquet')
 
- #   df_games_copy = df_games.copy()
- #   df_items_copy = df_items.copy()
+    df_games_copy = df_games.copy()
+    df_items_copy = df_items.copy()
 
     # Tu código existente de la función UserForGenre
- #   if 'genres' not in df_games_copy.columns:
- #       raise ValueError("El DataFrame df_games_copy no tiene una columna llamada 'genre'.")
+    if 'genres' not in df_games_copy.columns:
+        raise ValueError("El DataFrame df_games_copy no tiene una columna llamada 'genre'.")
 
-  #  df_games_copy['release_date'] = pd.to_datetime(df_games_copy['release_date'], errors='coerce')
+    df_games_copy['release_date'] = pd.to_datetime(df_games_copy['release_date'], errors='coerce')
 
-   # juegos_genero = df_games_copy[df_games_copy['genres'] == genero]
-   # juegos_usuario = juegos_genero.merge(df_items_copy, left_on='id', right_on='item_id')
-   # horas_por_usuario = juegos_usuario.groupby('user_id')['playtime_forever'].sum().reset_index()
-   # usuario_max_horas = horas_por_usuario.loc[horas_por_usuario['playtime_forever'].idxmax()]['user_id']
-   # horas_por_año = juegos_usuario.groupby(juegos_usuario['release_date'].dt.year)['playtime_forever'].sum().reset_index()
-   # horas_por_año.rename(columns={'playtime_forever': 'Horas'}, inplace=True)
-   # horas_por_año = horas_por_año.to_dict('records')
+    juegos_genero = df_games_copy[df_games_copy['genres'] == genero]
+    juegos_usuario = juegos_genero.merge(df_items_copy, left_on='id', right_on='item_id')
+    horas_por_usuario = juegos_usuario.groupby('user_id')['playtime_forever'].sum().reset_index()
+    usuario_max_horas = horas_por_usuario.loc[horas_por_usuario['playtime_forever'].idxmax()]['user_id']
+    horas_por_año = juegos_usuario.groupby(juegos_usuario['release_date'].dt.year)['playtime_forever'].sum().reset_index()
+    horas_por_año.rename(columns={'playtime_forever': 'Horas'}, inplace=True)
+    horas_por_año = horas_por_año.to_dict('records')
 
-   # result = {
-   #     "Usuario con más horas jugadas para {}: ".format(genero): usuario_max_horas,
-   #     "Horas jugadas": horas_por_año
-   # }
+    result = {
+        "Usuario con más horas jugadas para {}: ".format(genero): usuario_max_horas,
+        "Horas jugadas": horas_por_año
+    }
 
-    #return result 
+    return result 
 #----------------------------------------------------------------------------------------------------------------------------
 #                                                    CONSULTA 05
 #----------------------------------------------------------------------------------------------------------------------------
 #Esta consulta devuelve un diccionario con el nombre del desarrollador como llave y una lista con la cantidad total de registros de rese;as de usuarios que se encuentren categorizados con un análisis de sentimiento como valor positivo o negativo, en caso de no estar categorizados o encontrarse arroja el mensaje "No se encontró información sobre el desarrollador '...'".
 #http://127.0.0.1:8000/developer-reviews-analysis/?desarrollador=Kotoshiro
-#@app.get("/developer-reviews-analysis/")
+@app.get("/developer-reviews-analysis/")
 
 
-#def developer_reviews_analysis(desarrollador: str):
+def developer_reviews_analysis(desarrollador: str):
 
-#    games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
-#    sentiment = pd.read_parquet('./Data Exportada/Sentiment_Analysis_parquet')
-#    games_copy = games.copy()
-#    sentiment_copy = sentiment.copy()
+    games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+    sentiment = pd.read_parquet('./Data Exportada/Sentiment_Analysis_parquet')
+    games_copy = games.copy()
+    sentiment_copy = sentiment.copy()
 
 #Combinar conjuntos de datos en las columnas apropiadas ('item_id' en reviews y 'id' en games)
-#    merged_data = pd.merge(sentiment_copy, games_copy, left_on='item_id', right_on='id')
+    merged_data = pd.merge(sentiment_copy, games_copy, left_on='item_id', right_on='id')
 
 #Filtrar filas donde el puntaje de sentimiento es positivo (2) o negativo (0)
-#    filtered_data = merged_data[merged_data['sentiment_analysis'] != 1]  # Excluir sentimiento neutral
+    filtered_data = merged_data[merged_data['sentiment_analysis'] != 1]  # Excluir sentimiento neutral
 
 #Agrupar por desarrolladora y puntaje de sentimiento, contar la cantidad de resenas
-#    grouped_data = filtered_data.groupby(['developer', 'sentiment_analysis']).size().unstack(fill_value=0)
+    grouped_data = filtered_data.groupby(['developer', 'sentiment_analysis']).size().unstack(fill_value=0)
 
 #Verificar si la desarrolladora está presente en el DataFrame
- #   if desarrollador in grouped_data.index:
-        # Extraer cantidad de resenas positivas y negativas para la desarrolladora especificada
- #       developer_reviews = grouped_data.loc[desarrollador]
+    if desarrollador in grouped_data.index:
+         #Extraer cantidad de resenas positivas y negativas para la desarrolladora especificada
+        developer_reviews = grouped_data.loc[desarrollador]
 
         # Convertir cantidades a formato de lista con claves especificadas
- #       developer_reviews_list = [
-  #          {"Negativas": developer_reviews.get(0, 0)},
-   #         {"Positivas": developer_reviews.get(2, 0)}
-    #    ]
+        developer_reviews_list = [
+            {"Negativas": developer_reviews.get(0, 0)},
+            {"Positivas": developer_reviews.get(2, 0)}
+        ]
 
-     #   return {desarrollador: developer_reviews_list}
-    #else:
-    #    return f"No se encontró información sobre la desarrolladora {desarrollador}"
+        return {desarrollador: developer_reviews_list}
+    else:
+        return f"No se encontró información sobre la desarrolladora {desarrollador}"
 
 
 
@@ -187,11 +187,11 @@ def get_developer_stats(desarrollador: str):
 # ------------------------------------------------------------------------------------
 #                                       CONSULTA 4 
 #-------------------------------------------------------------------------------------
-#df_merged = pd.read_parquet('./Data Exportada/df_marged.parquet')
+df_merged = pd.read_parquet('Data Exportada/df_marged.parquet')
 
-#@app.get('/best_developer_year/')
+@app.get('/best_developer_year/')
 
-#def best_developer_year(año:int):
+def best_developer_year(año:int):
     """
     Devuelve el top 3 de desarrolladores con juegos MÁS recomendados por usuarios para el año dado.
     Se tienen en cuenta recommend = True + sentiment_analysis con mayor puntuación.
@@ -204,27 +204,27 @@ def get_developer_stats(desarrollador: str):
         dict: Diccionario ordenado con los top 3 desarrolladores para el año dado, en formato {1er puesto: primer juego, 2do puesto: segundo juego, 3er puesto: tercer juego}.
     """
     # Filtrar el DataFrame para el año dado
-   # df_año = df_merged[df_merged['year_posted'] == año]
+    df_año = df_merged[df_merged['year_posted'] == año]
 
     # Filtrar por recomendaciones verdaderas y sentimiento de análisis más alto
-   # df_filtrado = df_año[df_año['recommend'] & (df_año['sentiment_analysis'] == df_año['sentiment_analysis'].max())]
+    df_filtrado = df_año[df_año['recommend'] & (df_año['sentiment_analysis'] == df_año['sentiment_analysis'].max())]
 
     # Agrupar por desarrollador y contar las recomendaciones
-   # top_developers = df_filtrado.groupby('developer')['recommend'].sum()
+    top_developers = df_filtrado.groupby('developer')['recommend'].sum()
 
     # Ordenar los desarrolladores por número de recomendaciones en orden descendente
-   # top_developers = top_developers.sort_values(ascending=False)
+    top_developers = top_developers.sort_values(ascending=False)
 
     # Tomar los top 3 desarrolladores
-  #  top_3_developers = top_developers.head(3)
+    top_3_developers = top_developers.head(3)
 
     # Crear el diccionario ordenado con los top 3 desarrolladores
-    #top_developers_dict = {}
-   # for i, (developer, recomendaciones) in enumerate(top_3_developers.items(), 1):
-  #      puesto = f"{i}er puesto"
- #       top_developers_dict[puesto] = developer
-#
-#    return top_developers_dict
+    top_developers_dict = {}
+    for i, (developer, recomendaciones) in enumerate(top_3_developers.items(), 1):
+        puesto = f"{i}er puesto"
+        top_developers_dict[puesto] = developer
+
+    return top_developers_dict
 
 #--------------------------------------------------------------------------------------------------------------
 #                                           MODELO SISTEMA DE RECOMENDACION
