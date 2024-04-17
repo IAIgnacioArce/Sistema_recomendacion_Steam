@@ -30,7 +30,7 @@ def mensaje():
 @app.get('/developer/')
 def get_developer_stats(desarrollador: str):
 
-    df = pd.read_parquet("./Data_Exportada/user_games_clean.parquet")
+    df = pd.read_parquet("./Data Exportada/user_games_clean.parquet")
 
 
     df['release_date'] = pd.to_datetime(df['release_date'], errors='coerce')
@@ -63,9 +63,9 @@ def get_developer_stats(desarrollador: str):
 
 @app.get("/userdata/")
 def get_user_data(User_id: str):
-    df_games = pd.read_parquet('./Data_Exportada/user_games_clean.parquet')
-    df_items = pd.read_parquet('./Data_Exportada/user_items_clean.parquet')
-    df_reviews = pd.read_parquet('./Data_Exportada/user_reviews_clean.parquet')
+    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+    df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
+    df_reviews = pd.read_parquet('./Data Exportada/user_reviews_clean.parquet')
 
     games_copy = df_games.copy()
     items_copy = df_items.copy()
@@ -116,8 +116,8 @@ def get_user_data(User_id: str):
 
 @app.get("/user-for-genre/")
 def user_for_genre(genero: str):
-    df_games = pd.read_parquet('./Data_Exportada/user_games_clean.parquet')
-    df_items = pd.read_parquet('./Data_Exportada/user_items_clean.parquet')
+    df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+    df_items = pd.read_parquet('./Data Exportada/user_items_clean.parquet')
 
     df_games_copy = df_games.copy()
     df_items_copy = df_items.copy()
@@ -152,8 +152,8 @@ def user_for_genre(genero: str):
 
 def developer_reviews_analysis(desarrollador: str):
 
-    games = pd.read_parquet('./Data_Exportada/user_games_clean.parquet')
-    sentiment = pd.read_parquet('./Data_Exportada/Sentiment_Analysis_parquet')
+    games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
+    sentiment = pd.read_parquet('./Data Exportada/Sentiment_Analysis_parquet')
     games_copy = games.copy()
     sentiment_copy = sentiment.copy()
 
@@ -187,7 +187,7 @@ def developer_reviews_analysis(desarrollador: str):
 # ------------------------------------------------------------------------------------
 #                                       CONSULTA 4 
 #-------------------------------------------------------------------------------------
-df_merged = pd.read_parquet('./Data_Exportada/df_marged.parquet')
+df_merged = pd.read_parquet('./Data Exportada/df_marged.parquet')
 
 @app.get('/best_developer_year/')
 
@@ -231,8 +231,8 @@ def best_developer_year(año:int):
 #--------------------------------------------------------------------------------------------------------------
 #774276 ---> usuario de prueba 
 
-df_genres = pd.read_parquet('./Data_Exportada/df_dummies.parquet')
-df_games = pd.read_parquet('./Data_Exportada/user_games_clean.parquet')
+df_genres = pd.read_parquet('./Data Exportada/df_dummies.parquet')
+df_games = pd.read_parquet('./Data Exportada/user_games_clean.parquet')
 
 df_merged = df_games.merge(df_genres, on='id', how='left')
 features = ['release_date'] + list(df_genres.columns[1:])
@@ -277,7 +277,7 @@ def recomendar_juegos(game_id: str):
     # Mensaje de recomendación
     mensaje_recomendacion = f"Juegos recomendados basados en el ID del juego {game_id} - {df_sampled['app_name'].iloc[indice_juego]}:"
 
-    return [mensaje_recomendacion] + nombres_juegos_similares  
+    return [mensaje_recomendacion] + nombres_juegos_similares 
 
 
 
